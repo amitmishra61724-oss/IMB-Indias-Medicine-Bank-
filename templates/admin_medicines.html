@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Admin Medicines - IMB{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="section-title mb-3">Admin - Medicines</h2>
+  <div class="bg-panel p-3 table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Medicine</th><th>Donor</th><th>City</th><th>Expiry</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+      {% for med in medicines %}
+      <tr>
+        <td>{{ med.name }}</td>
+        <td>{{ med.donor_name }}</td>
+        <td>{{ med.city }}</td>
+        <td>{{ med.expiry_date }}</td>
+        <td><span class="badge badge-{{ med.status }}">{{ med.status|capitalize }}</span></td>
+        <td>
+          <form method="POST" action="{{ url_for('delete_medicine', med_id=med.id) }}" onsubmit="return confirm('Delete listing?')">
+            <button class="btn btn-sm btn-outline-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

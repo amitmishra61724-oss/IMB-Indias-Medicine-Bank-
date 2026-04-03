@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Donate Medicine – IMB{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h2 class="section-title"><i class="bi bi-gift me-2 text-success"></i>Donate a Medicine</h2>
+      <p class="text-muted mb-4">List unused medicines with complete location details. This improves trust and matching speed for receivers.</p>
+
+      <div class="card p-4 shadow-sm">
+        <form method="POST" enctype="multipart/form-data">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Medicine Name <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control" placeholder="e.g. Paracetamol 500mg" required/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Generic Name</label>
+              <input type="text" name="generic_name" class="form-control" placeholder="e.g. Acetaminophen (optional)"/>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Quantity <span class="text-danger">*</span></label>
+              <input type="number" name="quantity" class="form-control" placeholder="20" min="1" required/>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Unit <span class="text-danger">*</span></label>
+              <select name="unit" class="form-select" required>
+                <option value="">Select unit</option>
+                <option value="tablets">Tablets</option>
+                <option value="capsules">Capsules</option>
+                <option value="bottles">Bottles</option>
+                <option value="vials">Vials</option>
+                <option value="strips">Strips</option>
+                <option value="ml">ML</option>
+                <option value="mg">MG</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Condition <span class="text-danger">*</span></label>
+              <select name="condition" class="form-select" required>
+                <option value="sealed">Sealed / Unopened</option>
+                <option value="opened">Opened</option>
+                <option value="partial">Partial</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Expiry Date <span class="text-danger">*</span></label>
+              <input type="date" name="expiry_date" class="form-control" required id="expiryField"/>
+              <div id="expiryWarning" class="form-text text-warning fw-semibold d-none">
+                <i class="bi bi-exclamation-triangle me-1"></i>This medicine expires within 30 days.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Your City <span class="text-danger">*</span></label>
+              <input type="text" name="city" class="form-control" placeholder="Mumbai" required minlength="2"/>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Pickup Address / Location <span class="text-danger">*</span></label>
+              <input type="text" name="pickup_location" class="form-control" placeholder="Example: Near Metro Gate 2, Sector 18, Noida - 201301" required minlength="8"/>
+              <div class="form-text">Add landmark + area + pincode for reliable handover.</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Description / Notes</label>
+              <textarea name="description" class="form-control" rows="2" placeholder="Storage details, pack info, etc."></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Medicine Image</label>
+              <input type="file" name="medicine_image" class="form-control" accept=".png,.jpg,.jpeg,.webp" id="medicineImageInput"/>
+              <div class="form-text">PNG/JPG/JPEG/WEBP, max 5 MB.</div>
+              <img id="medicinePreview" class="img-fluid rounded mt-2 d-none" style="max-height:220px;" alt="Medicine preview"/>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg px-5 fw-semibold">
+              <i class="bi bi-check-circle me-2"></i>List Medicine
+            </button>
+            <a href="{{ url_for('my_donations') }}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const expiryField = document.getElementById("expiryField");
+  const expiryWarning = document.getElementById("expiryWarning");
+  const medicineImageInput = document.getElementById("medicineImageInput");
+  const medicinePreview = document.getElementById("medicinePreview");
+
+  expiryField.addEventListener("change", function () {
+    const expiry = new Date(this.value);
+    const soon = new Date();
+    soon.setDate(soon.getDate() + 30);
+    expiryWarning.classList.toggle("d-none", expiry > soon || !this.value);
+  });
+
+  medicineImageInput.addEventListener("change", function () {
+    const file = this.files && this.files[0];
+    if (!file) {
+      medicinePreview.classList.add("d-none");
+      medicinePreview.removeAttribute("src");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      medicinePreview.src = e.target.result;
+      medicinePreview.classList.remove("d-none");
+    };
+    reader.readAsDataURL(file);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}IMB - India's Medicine Bank{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f5f8fb;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #0d9488;
+      --border: #e5e7eb;
+    }
+    html[data-theme="dark"] {
+      --bg: #0f172a;
+      --card-bg: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #2dd4bf;
+      --border: #1f2937;
+    }
+    body { background: radial-gradient(circle at top right, #eefcfb, var(--bg)); color: var(--text); }
+    .bg-panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; }
+    .navbar { border-bottom: 1px solid var(--border); background: var(--card-bg) !important; backdrop-filter: blur(8px); }
+    .navbar-brand { font-weight: 800; color: var(--primary) !important; letter-spacing: .3px; }
+    .section-title { font-weight: 800; letter-spacing: .2px; }
+    .text-muted { color: var(--muted) !important; }
+    .card, .medicine-card, .table { background: var(--card-bg); border-color: var(--border); color: var(--text); }
+    .medicine-card { border: 1px solid var(--border); border-radius: 12px; transition: .2s ease; }
+    .medicine-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(2, 6, 23, .12); }
+    .btn-primary { background: linear-gradient(135deg, #0d9488, #0f766e); border: none; }
+    .btn-primary:hover { filter: brightness(0.96); }
+    .hero-panel { background: linear-gradient(130deg, #0f172a, #134e4a); color: #f8fafc; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; }
+    .badge-sealed { background:#d1fae5; color:#065f46; }
+    .badge-opened { background:#fef3c7; color:#92400e; }
+    .badge-partial { background:#fee2e2; color:#991b1b; }
+    .badge-available { background:#d1fae5; color:#065f46; }
+    .badge-reserved { background:#dbeafe; color:#1e40af; }
+    .badge-donated { background:#ede9fe; color:#5b21b6; }
+    .badge-pending { background:#fef3c7; color:#92400e; }
+    .badge-approved { background:#d1fae5; color:#065f46; }
+    .badge-rejected { background:#fee2e2; color:#991b1b; }
+    .badge-fulfilled { background:#ede9fe; color:#5b21b6; }
+    .expiry-warning { color:#b45309; font-weight:600; }
+    .expiry-ok { color:#059669; }
+    .stat-box { padding: 1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card-bg); }
+    .stat-value { font-size: 1.7rem; font-weight: 800; }
+    .footer-note { color: var(--muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('home') }}">IMB</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('search') }}">Search</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        {% if current_user and current_user.role == 'donor' %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('donate') }}">Donate</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('my_donations') }}">My Donations</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('incoming_requests') }}">Requests</a></li>
+        {% elif current_user and current_user.role == 'receiver' %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('cart') }}">Cart</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('my_requests') }}">My Requests</a></li>
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav align-items-center">
+        <li class="nav-item me-2">
+          <button class="btn btn-sm btn-outline-secondary" id="themeToggle" type="button" title="Toggle theme">
+            <i class="bi bi-moon-stars"></i>
+          </button>
+        </li>
+        {% if current_user %}
+        <li class="nav-item"><span class="nav-link">{{ current_user.name }}</span></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+        {% else %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-3">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }} alert-dismissible fade show">
+          {{ msg }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+{% block content %}{% endblock %}
+<div class="container py-4">
+  <div class="footer-note text-center">IMB - India's Medicine Bank </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  (function () {
+    const savedTheme = localStorage.getItem("imb-theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    const btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    const updateIcon = () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      btn.innerHTML = isDark ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon-stars"></i>';
+    };
+    updateIcon();
+    btn.addEventListener("click", function () {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("imb-theme", next);
+      updateIcon();
+    });
+  })();
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}My Requests – IMB{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="section-title"><i class="bi bi-list-check me-2 text-success"></i>My Requests</h2>
+  <p class="text-muted mb-4">Track status and send acknowledgement to donor after receiving medicine.</p>
+  <div class="d-flex flex-wrap gap-2 mb-3" id="reqFilters">
+    <button class="btn btn-sm btn-outline-secondary active" data-filter="all">All</button>
+    <button class="btn btn-sm btn-outline-warning" data-filter="pending">Pending</button>
+    <button class="btn btn-sm btn-outline-success" data-filter="approved">Approved</button>
+    <button class="btn btn-sm btn-outline-primary" data-filter="fulfilled">Fulfilled</button>
+    <button class="btn btn-sm btn-outline-danger" data-filter="rejected">Rejected</button>
+  </div>
+
+  {% if requests %}
+  <div class="row g-3">
+    {% for req in requests %}
+    <div class="col-12 req-item" data-status="{{ req.status }}">
+      <div class="card p-3 shadow-sm">
+        <div class="d-flex justify-content-between align-items-start gap-3">
+          <div>
+            <h6 class="fw-bold mb-1">{{ req.medicine_name }}</h6>
+            <div class="small text-muted">Donor: {{ req.donor_name }} {% if req.donor_phone %} | {{ req.donor_phone }}{% endif %}</div>
+            <div class="small text-muted">Requested on {{ req.created_at[:10] }}</div>
+          </div>
+          <span class="badge badge-{{ req.status }}">{{ req.status|capitalize }}</span>
+        </div>
+
+        {% if req.notes %}
+        <div class="mt-2 small p-2 rounded" style="background:#f8fafb;"><strong>Your note:</strong> {{ req.notes }}</div>
+        {% endif %}
+
+        {% if req.status == 'fulfilled' %}
+          {% if req.receiver_acknowledged %}
+          <div class="alert alert-success mt-3 mb-0 py-2">
+            <strong>Acknowledged:</strong> {{ req.ack_message }}
+          </div>
+          {% else %}
+          <form class="mt-3" method="POST" action="{{ url_for('acknowledge_request', req_id=req.id) }}">
+            <label class="form-label fw-semibold">Send acknowledgement to donor</label>
+            <div class="input-group">
+              <input type="text" name="ack_message" class="form-control" placeholder="Thank you, medicine received safely." required/>
+              <button type="submit" class="btn btn-primary">Send</button>
+            </div>
+          </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <h5 class="mt-3 text-muted">No requests yet</h5>
+    <a href="{{ url_for('search') }}" class="btn btn-primary">Find Medicine</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  const filterButtons = Array.from(document.querySelectorAll("#reqFilters [data-filter]"));
+  const requestCards = Array.from(document.querySelectorAll(".req-item"));
+  filterButtons.forEach(btn => {
+    btn.addEventListener("click", function () {
+      const filter = this.dataset.filter;
+      filterButtons.forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+      requestCards.forEach(card => {
+        const status = card.dataset.status;
+        card.style.display = (filter === "all" || status === filter) ? "" : "none";
+      });
+    });
+  });
+</script>
+{% endblock %}

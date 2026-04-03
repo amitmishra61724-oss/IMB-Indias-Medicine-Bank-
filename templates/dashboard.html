@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - IMB{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="section-title mb-3">Impact Dashboard</h2>
+  <div class="row g-3 mb-4">
+    <div class="col-md-4 col-lg-2"><div class="stat-box"><div class="text-muted small">Donors</div><div class="stat-value">{{ stats.total_donors }}</div></div></div>
+    <div class="col-md-4 col-lg-2"><div class="stat-box"><div class="text-muted small">Receivers</div><div class="stat-value">{{ stats.total_receivers }}</div></div></div>
+    <div class="col-md-4 col-lg-2"><div class="stat-box"><div class="text-muted small">Medicines</div><div class="stat-value">{{ stats.total_medicines }}</div></div></div>
+    <div class="col-md-4 col-lg-2"><div class="stat-box"><div class="text-muted small">Donated</div><div class="stat-value">{{ stats.total_donated }}</div></div></div>
+    <div class="col-md-4 col-lg-2"><div class="stat-box"><div class="text-muted small">Requests</div><div class="stat-value">{{ stats.total_requests }}</div></div></div>
+    <div class="col-md-4 col-lg-2"><div class="stat-box"><div class="text-muted small">Fulfilled</div><div class="stat-value">{{ stats.total_fulfilled }}</div></div></div>
+  </div>
+
+  <div class="bg-panel p-3">
+    <h6 class="mb-3">Live Highlights (JavaScript)</h6>
+    <ul id="dashHighlights" class="mb-0"></ul>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script> const topDonated = {{ top_donated_json|safe }}; const topRequested = {{ top_requested_json|safe }}; const cities = {{ cities_json|safe }}; const lines = []; if (topDonated[0]) lines.push(Top donated medicine: ${topDonated[0].name} (${topDonated[0].count})); if (topRequested[0]) lines.push(Top requested medicine: ${topRequested[0].name} (${topRequested[0].count})); if (cities[0]) lines.push(Most active city: ${cities[0].city} (${cities[0].count})); const el = document.getElementById("dashHighlights"); el.innerHTML = lines.length ? lines.map(v => <li>${v}</li>).join("") : "<li>No analytics yet.</li>"; </script> {% endblock %} 

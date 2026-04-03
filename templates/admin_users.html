@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Admin Users - IMB{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <h2 class="section-title mb-3">Admin - Users</h2>
+  <div class="bg-panel p-3 table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>City</th><th>Action</th></tr></thead>
+      <tbody>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>{{ user.city }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_delete_user', user_id=user.id) }}" onsubmit="return confirm('Delete this user?')">
+            <button class="btn btn-sm btn-outline-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

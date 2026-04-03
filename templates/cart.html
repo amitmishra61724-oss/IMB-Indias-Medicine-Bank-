@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Cart - IMB{% endblock %}
+{% block content %}
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="section-title mb-0">Receiver Cart</h2>
+    {% if items %}
+    <form method="POST" action="{{ url_for('checkout') }}" onsubmit="return confirm('Send request for all cart medicines?')">
+      <button class="btn btn-primary">Checkout ({{ items|length }})</button>
+    </form>
+    {% endif %}
+  </div>
+
+  {% if items %}
+  <div class="row g-3">
+    {% for item in items %}
+    <div class="col-md-6">
+      <div class="medicine-card p-3">
+        <div class="fw-semibold">{{ item.name }}</div>
+        <div class="small text-muted">{{ item.quantity }} {{ item.unit }} | {{ item.city }} | Expires {{ item.expiry_date }}</div>
+        <form method="POST" action="{{ url_for('remove_from_cart', cart_id=item.cart_id) }}" class="mt-2">
+          <button class="btn btn-sm btn-outline-danger">Remove</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-panel p-4 text-muted">No items in cart. Add medicines from Search page.</div>
+  {% endif %}
+</div>
+{% endblock %}
