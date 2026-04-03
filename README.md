@@ -61,7 +61,7 @@ IMB/
 
 1. Clone Repository
 
-git clone https://github.com/amitmishra61724-oss/IMB-Indias-Medicine-Bank.git
+git clone https://github.com/amitmishra61724-oss/IMB-Indias-Medicine-Bank-.git
 
 2. Navigate to Project
 
