@@ -61,7 +61,7 @@ IMB/
 
 1. Clone Repository
 
-git clone https://github.com/your-username/IMB.git
+git clone https://github.com/amitmishra61724-oss/IMB-Indias-Medicine-Bank.git
 
 2. Navigate to Project
 
@@ -79,11 +79,7 @@ python app.py
 
 http://127.0.0.1:5000/
 
----
 
-📸 Screenshots
-
-(Add screenshots of your project here)
 
 ---
 
